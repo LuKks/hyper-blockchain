@@ -8,15 +8,17 @@ Proof of Work with Hypercore (experiment)
 npm i -g hyper-blockchain
 ```
 
-## Usage
+## Create a blockchain
 
-Run a server
+Run a server, it will create two folders `./blockchain-data/` and `./blockchain-database`
 
 ```
 hyper-blockchain-server
 ```
 
-Then run a single miner
+## Run a miner
+
+Run a single miner, it will create a `./miner-primary-key` file
 
 `hyper-blockchain-miner --key <core-key>`
 
