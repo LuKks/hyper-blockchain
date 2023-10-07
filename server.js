@@ -68,17 +68,22 @@ async function main () {
       const isValid = await checkNonce(verifier, req.nonce, complexity)
       if (!isValid) return null // TODO: Server should ban the IP of peers that submits many wrong nonces, first miner.js should try to avoid it
 
+      const lastBlock = core.length === 0 ? null : await core.get(core.length - 1)
+
       // TODO: Allow user to put any random data it wants
       // TODO: Add a hash of the previous block?
-      const block = await core.append({
+      const tx = {
         nonce: req.nonce,
         complexity,
         time: Date.now(),
         by: rpc.mux.stream.remotePublicKey
-      })
+      }
+      const block = await core.append(tx)
 
       const pk = rpc.mux.stream.remotePublicKey.subarray(0, 5).toString('hex') + '..'
-      console.log('New length', core.length, 'Thanks to', pk, 'Adjust', (core.length % AVG_BLOCKS) + '/' + AVG_BLOCKS)
+      const time = lastBlock ? (tx.time - lastBlock.time) : null
+
+      console.log('New length', core.length, 'Time diff', time, 'Thanks to', pk, 'Adjust', (core.length % AVG_BLOCKS) + '/' + AVG_BLOCKS)
 
       const complexityChanged = await maybeAdjustComplexity()
 
