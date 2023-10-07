@@ -1,6 +1,6 @@
 {
   "name": "hyper-blockchain",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Proof of Work with Hypercore (experiment)",
   "main": "index.js",
   "bin": {
