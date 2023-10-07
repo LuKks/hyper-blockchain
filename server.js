@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const Hypercore = require('hypercore')
 const Hyperbee = require('hyperbee')
 const Hyperswarm = require('hyperswarm')
@@ -44,6 +46,7 @@ async function main () {
   complexity = await getComplexity()
   await maybeAdjustComplexity()
 
+  // We should find a simpler PoW system so we don't need to check past nonces
   const verifier = new pow.Verifier({
     prefix: core.key,
     validity: Infinity, // TODO
@@ -77,9 +80,12 @@ async function main () {
       const pk = rpc.mux.stream.remotePublicKey.subarray(0, 8).toString('hex') + '..'
       console.log('New length', core.length, 'Complexity', complexity, 'Thanks to', pk)
 
-      await maybeAdjustComplexity()
+      const complexityChanged = await maybeAdjustComplexity()
 
-      return block.length - 1
+      return {
+        block: { index: block.length - 1 },
+        complexityChanged
+      }
     } finally {
       release()
     }
@@ -131,7 +137,7 @@ async function complexityInfo () {
     averageTime = total / (blocks.length - 1)
   }
 
-  console.log('complexityInfo', { time })
+  // console.log('complexityInfo', { averageTime })
 
   return { averageTime, lastBlock }
 }
@@ -151,17 +157,23 @@ function adjustComplexity ({ averageTime, lastBlock }) {
 }
 
 async function maybeAdjustComplexity () {
-  if (core.length === 0) return
+  if (core.length === 0) return false
+
+  // console.log('maybeAdjustComplexity', { AVG_BLOCK_TIME, AVG_BLOCKS }, 'Round', core.length % AVG_BLOCKS)
 
   if (core.length % AVG_BLOCKS === 0) {
-    console.log('Adjust complexity')
+    console.log('Adjusting complexity', complexity)
 
     const currentComplexityInfo = await complexityInfo()
     const nextComplexity = adjustComplexity(currentComplexityInfo)
     console.log('Next complexity', nextComplexity)
 
     complexity = nextComplexity
+
+    return true
   }
+
+  return false
 }
 
 async function checkNonce (verifier, nonce, complexity) {
@@ -199,7 +211,7 @@ async function checkNonce (verifier, nonce, complexity) {
     }
   } */
 
-  console.log('Nonce is valid and unique!')
+  // console.log('Nonce is valid and unique!')
 
   return true
 }

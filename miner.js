@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require('fs')
 const Hypercore = require('hypercore')
 const RAM = require('random-access-memory')
@@ -10,7 +12,7 @@ const goodbye = require('graceful-goodbye')
 const pow = require('proof-of-work')
 
 const key = process.argv[2]
-if (!key) throw new Error('node miner.js <core-key>')
+if (!key) throw new Error('hyper-blockchain-miner <core-key>')
 
 const core = new Hypercore(RAM, HypercoreId.decode(key), { valueEncoding: c.any })
 
@@ -23,7 +25,6 @@ async function main () {
   await core.ready()
 
   const seed = await getPrimaryKey('./miner-primary-key')
-  console.log(seed)
 
   /* const done = core.findingPeers()
   const swarm = new Hyperswarm()
@@ -57,27 +58,46 @@ async function main () {
 }
 
 async function run (rpc, solver) {
-  let complexity = await rpc.request(core.key, 'complexity')
+  let complexity = await request(rpc, 'complexity')
 
   while (true) {
-    // TODO: Being able to cancel current solving i.e. complexity changed
-    // TODO: Callback for each internal iteration for when it's slow to solve it
+    const started = Date.now()
+
+    // TODO: Being able to cancel current solving to save CPU i.e. complexity changed
+    // TODO: Callback for each internal iteration for logging progress
     const nonce = solver.solve(complexity, core.key)
 
-    console.log('Submit', nonce.toString('hex'))
-    const block = await rpc.request(core.key, 'submit', { nonce })
+    console.log('Submit', nonce.toString('hex'), 'Time spent', Date.now() - started)
+    const added = await request(rpc, 'submit', { nonce })
 
-    if (!block) {
+    if (!added) {
       console.log('Failed to submit', { nonce: nonce.toString('hex'), complexity })
 
-      // Assume complexity changed, this can waste a lot of CPU because server should push you the new complexity on change
-      complexity = await rpc.request(core.key, 'complexity')
+      // Assume complexity changed, this already wasted a lot of CPU because server should push you the new complexity on change
+      complexity = await request(rpc, 'complexity')
       console.log('Maybe new complexity', complexity)
 
       continue
     }
 
-    console.log('Block added!', { index: block, complexity })
+    console.log('Block added!', added.block)
+
+    if (added.complexityChanged) {
+      complexity = await request(rpc, 'complexity')
+      console.log('New complexity', complexity)
+    }
+  }
+}
+
+// One-time retry
+async function request (rpc, method, value, options) {
+  try {
+    return await rpc.request(core.key, method, value, options)
+  } catch (err) {
+    if (err.code !== 'CHANNEL_DESTROYED' && err.code !== 'CHANNEL_CLOSED') {
+      throw err
+    }
+    return await rpc.request(core.key, method, value, options)
   }
 }
 

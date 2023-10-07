@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Proof of Work with Hypercore (experiment)",
   "main": "index.js",
+  "bin": {
+    "hyper-blockchain-server": "server.js",
+    "hyper-blockchain-miner": "miner.js"
+  },
   "scripts": {
     "test": "standard"
   },
