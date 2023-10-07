@@ -10,7 +10,7 @@ const mutexify = require('mutexify/promise')
 const goodbye = require('graceful-goodbye')
 const pow = require('proof-of-work')
 
-const AVG_BLOCK_TIME = 15 * 1000 // Average block time is ~15 seconds
+const AVG_BLOCK_TIME = 10 * 1000 // Average block time is ~10 seconds
 const AVG_BLOCKS = (4 * 60 * 60 * 1000) / AVG_BLOCK_TIME // Adjusted every "~4 hours" equivalent in amount of blocks
 
 const core = new Hypercore('./blockchain-data', { cache: true, valueEncoding: c.any })
