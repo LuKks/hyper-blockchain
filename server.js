@@ -159,7 +159,7 @@ function adjustComplexity ({ averageTime, lastBlock }) {
 async function maybeAdjustComplexity () {
   if (core.length === 0) return false
 
-  // console.log('maybeAdjustComplexity', { AVG_BLOCK_TIME, AVG_BLOCKS }, 'Round', core.length % AVG_BLOCKS)
+  console.log('Maybe adjust complexity', { AVG_BLOCK_TIME, AVG_BLOCKS }, 'Round', core.length % AVG_BLOCKS)
 
   if (core.length % AVG_BLOCKS === 0) {
     console.log('Adjusting complexity', complexity)
