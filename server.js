@@ -112,34 +112,38 @@ async function complexityInfo () {
   const end = core.length
 
   const blocks = []
-  let firstBlock = null
   let lastBlock = null
-  let time = 0
+  let averageTime = 0
 
   for await (const block of core.createReadStream({ start, end })) {
     blocks.push(block)
   }
 
-  if (blocks.length > 0) {
-    firstBlock = blocks[0]
+  if (blocks.length >= 2) {
     lastBlock = blocks[blocks.length - 1]
-    time /= blocks.length
-    time -= firstBlock.time
+
+    let total = 0
+
+    for (let i = 1; i < blocks.length; i++) {
+      total += blocks[i].time - blocks[i - 1].time
+    }
+
+    averageTime = total / (blocks.length - 1)
   }
 
   console.log('complexityInfo', { time })
 
-  return { time, lastBlock }
+  return { averageTime, lastBlock }
 }
 
-function adjustComplexity ({ time, lastBlock }) {
-  if (time === 0) return 1
+function adjustComplexity ({ averageTime, lastBlock }) {
+  if (averageTime === 0) return 1
 
-  if (time === AVG_BLOCK_TIME) {
+  if (averageTime === AVG_BLOCK_TIME) {
     return lastBlock.complexity
   }
 
-  if (time > AVG_BLOCK_TIME) {
+  if (averageTime > AVG_BLOCK_TIME) {
     return Math.max(1, lastBlock.complexity - 1)
   }
 
