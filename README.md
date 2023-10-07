@@ -10,7 +10,7 @@ npm i -g hyper-blockchain
 
 ## Create a blockchain
 
-Run a server, it will create two folders `./blockchain-data/` and `./blockchain-database`
+Run a server, it will create two folders `./blockchain-data/` and `./blockchain-database/`
 
 ```
 hyper-blockchain-server
