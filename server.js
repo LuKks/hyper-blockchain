@@ -77,8 +77,8 @@ async function main () {
         by: rpc.mux.stream.remotePublicKey
       })
 
-      const pk = rpc.mux.stream.remotePublicKey.subarray(0, 8).toString('hex') + '..'
-      console.log('New length', core.length, 'Complexity', complexity, 'Thanks to', pk)
+      const pk = rpc.mux.stream.remotePublicKey.subarray(0, 5).toString('hex') + '..'
+      console.log('New length', core.length, 'Thanks to', pk, 'Adjust', (core.length % AVG_BLOCKS) + '/' + AVG_BLOCKS)
 
       const complexityChanged = await maybeAdjustComplexity()
 
@@ -159,7 +159,7 @@ function adjustComplexity ({ averageTime, lastBlock }) {
 async function maybeAdjustComplexity () {
   if (core.length === 0) return false
 
-  console.log('Maybe adjust complexity', { AVG_BLOCK_TIME, AVG_BLOCKS }, 'Round', core.length % AVG_BLOCKS)
+  // console.log('Maybe adjust complexity', { AVG_BLOCK_TIME, AVG_BLOCKS }, 'Round', core.length % AVG_BLOCKS)
 
   if (core.length % AVG_BLOCKS === 0) {
     console.log('Adjusting complexity', complexity)
