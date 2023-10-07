@@ -39,6 +39,8 @@ async function main () {
     valueEncoding: c.any // TODO
   })
 
+  console.log('Miner public key', HypercoreId.encode(rpc.defaultKeyPair.publicKey))
+
   goodbye(() => rpc.destroy())
 
   while (true) {
