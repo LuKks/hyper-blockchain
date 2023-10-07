@@ -140,7 +140,7 @@ function adjustComplexity ({ time, lastBlock }) {
   }
 
   if (time > AVG_BLOCK_TIME) {
-    return Math.min(1, lastBlock.complexity - 1)
+    return Math.max(1, lastBlock.complexity - 1)
   }
 
   return lastBlock.complexity + 1
