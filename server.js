@@ -83,7 +83,7 @@ async function main () {
       const pk = rpc.mux.stream.remotePublicKey.subarray(0, 5).toString('hex') + '..'
       const time = lastBlock ? (tx.time - lastBlock.time) : null
 
-      console.log('New length', core.length, 'Time diff', time, 'Thanks to', pk, 'Adjust', (core.length % AVG_BLOCKS) + '/' + AVG_BLOCKS)
+      console.log('New length', core.length, 'Time diff', time, 'Complexity', complexity, 'Thanks to', pk, 'Adjust', (core.length % AVG_BLOCKS) + '/' + AVG_BLOCKS)
 
       const complexityChanged = await maybeAdjustComplexity()
 
