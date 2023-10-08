@@ -20,7 +20,7 @@ hyper-blockchain-server
 
 Run a single miner, it will create a `./miner-primary-key` file
 
-`hyper-blockchain-miner --key <core-key>`
+`hyper-blockchain-miner <core-key>`
 
 Now get more people to mine your Hypercore! :)
 
