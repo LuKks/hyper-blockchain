@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs')
+const path = require('path')
 const Hypercore = require('hypercore')
 const RAM = require('random-access-memory')
 // const Hyperswarm = require('hyperswarm')
@@ -9,9 +10,13 @@ const c = require('compact-encoding')
 const HypercoreId = require('hypercore-id-encoding')
 const crypto = require('hypercore-crypto')
 const goodbye = require('graceful-goodbye')
+const minimist = require('minimist')
 const pow = require('proof-of-work')
 
-const key = process.argv[2]
+const argv = minimist(process.argv.slice(2))
+const storage = path.resolve(argv.storage || '.')
+
+const key = argv._[0]
 if (!key) throw new Error('hyper-blockchain-miner <core-key>')
 
 const core = new Hypercore(RAM, HypercoreId.decode(key), { valueEncoding: c.any })
@@ -24,7 +29,7 @@ main().catch(err => {
 async function main () {
   await core.ready()
 
-  const seed = await getPrimaryKey('./miner-primary-key')
+  const seed = await getPrimaryKey(path.join(storage, 'miner-primary-key'))
 
   /* const done = core.findingPeers()
   const swarm = new Hyperswarm()
@@ -113,6 +118,7 @@ async function getPrimaryKey (filename) {
 
     const seed = crypto.randomBytes(32)
 
+    await fs.promises.mkdir(path.dirname(filename), { recursive: true })
     await fs.promises.writeFile(filename, seed.toString('hex') + '\n', { flag: 'wx' })
 
     return seed

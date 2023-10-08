@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const path = require('path')
 const Hypercore = require('hypercore')
 const Hyperbee = require('hyperbee')
 const Hyperswarm = require('hyperswarm')
@@ -8,13 +9,17 @@ const c = require('compact-encoding')
 const HypercoreId = require('hypercore-id-encoding')
 const mutexify = require('mutexify/promise')
 const goodbye = require('graceful-goodbye')
+const minimist = require('minimist')
 const pow = require('proof-of-work')
 
 const AVG_BLOCK_TIME = 10 * 1000 // Average block time is ~10 seconds
 const AVG_BLOCKS = (4 * 60 * 60 * 1000) / AVG_BLOCK_TIME // Adjusted every "~4 hours" equivalent in amount of blocks
 
-const core = new Hypercore('./blockchain-data', { cache: true, valueEncoding: c.any })
-const db = new Hyperbee(new Hypercore('./blockchain-database', { cache: true, keyEncoding: c.any, valueEncoding: c.any }))
+const argv = minimist(process.argv.slice(2))
+const storage = path.resolve(argv.storage || '.')
+
+const core = new Hypercore(path.join(storage, 'blockchain-data'), { cache: true, valueEncoding: c.any })
+const db = new Hyperbee(new Hypercore(path.join(storage, 'blockchain-database'), { cache: true, keyEncoding: c.any, valueEncoding: c.any }))
 
 const lock = mutexify()
 let complexity = 0

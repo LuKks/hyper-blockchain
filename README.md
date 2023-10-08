@@ -13,14 +13,14 @@ npm i -g hyper-blockchain
 Run a server, it will create two folders `./blockchain-data/` and `./blockchain-database/`
 
 ```
-hyper-blockchain-server
+hyper-blockchain-server [--storage <path>]
 ```
 
 ## Run a miner
 
 Run a single miner, it will create a `./miner-primary-key` file
 
-`hyper-blockchain-miner <core-key>`
+`hyper-blockchain-miner <core-key> [--storage <path>]`
 
 Now get more people to mine your Hypercore! :)
 

@@ -33,6 +33,7 @@
     "hypercore-crypto": "^3.4.0",
     "hypercore-id-encoding": "^1.2.0",
     "hyperswarm": "^4.7.3",
+    "minimist": "^1.2.8",
     "mutexify": "^1.4.0",
     "proof-of-work": "^3.3.2",
     "random-access-memory": "^6.2.0"
